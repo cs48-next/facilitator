@@ -26,7 +26,7 @@ java -jar target\facilitator-0.0.1-SNAPSHOT.jar
 Create a venue.
 
 ### Endpoint
-`POST /v1/venue`
+`POST /venue`
 ### Request Body
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -35,7 +35,7 @@ Create a venue.
 
 ### Example
 ```bash
-curl -v -XPOST locahost:8080/v1/venue -H'Content-Type: application/json' -d '
+curl -v -XPOST localhost:8080/venue -H'Content-Type: application/json' -d '
 {
 	"latitude" : 0,
 	"longitude" : 0
