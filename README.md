@@ -18,7 +18,7 @@ mvn spring-boot:run
 
 We can also run from the generated executable JAR file:
 ```
-java -jar target\facilitator-0.0.1-SNAPSHOT.jar
+java -jar target/facilitator-0.0.1-SNAPSHOT.jar
 ```
 # API
 ## Venue
