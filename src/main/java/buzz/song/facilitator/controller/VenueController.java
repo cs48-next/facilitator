@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.TreeSet;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Entry point for API requests related to venues.
  */
-@Controller
+@RestController
 public class VenueController {
 	private static final Logger logger = LoggerFactory.getLogger(VenueController.class);
 
@@ -45,7 +44,6 @@ public class VenueController {
 	}
 
 	@PostMapping("/venue")
-	@ResponseBody
 	public DeferredResult<Venue> createVenue(
 			@RequestBody final VenueCreateRequest createRequest
 	) {
@@ -72,7 +70,6 @@ public class VenueController {
 	}
 
 	@GetMapping("/venue")
-	@ResponseBody
 	public DeferredResult<VenueListResponse> listVenues(
 			@RequestParam("latitude") final double latitude,
 			@RequestParam("longitude") final double longitude
@@ -102,7 +99,6 @@ public class VenueController {
 	}
 
 	@GetMapping("/venue/{venue_id}")
-	@ResponseBody
 	public DeferredResult<Venue> fetchVenue(
 			@PathVariable("venue_id") final String venueId
 	) {
@@ -123,8 +119,7 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@PostMapping("/track/{venue_id}/{track_id}")
-	@ResponseBody
+	@PutMapping("/track/{venue_id}/{track_id}")
 	public DeferredResult<Track> proposeTrack(
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
@@ -148,7 +143,6 @@ public class VenueController {
 	}
 
 	@PutMapping("/vote/{venue_id}/{track_id}/upvote")
-	@ResponseBody
 	public DeferredResult<Vote> upvoteTrack(
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
@@ -172,7 +166,6 @@ public class VenueController {
 	}
 
 	@PutMapping("/vote/{venue_id}/{track_id}/downvote")
-	@ResponseBody
 	public DeferredResult<Vote> downvoteTrack(
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
@@ -195,8 +188,7 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@DeleteMapping("/vote/{venue_id}/{track_id}}")
-	@ResponseBody
+	@DeleteMapping("/vote/{venue_id}/{track_id}")
 	public DeferredResult<Void> deleteVote(
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
