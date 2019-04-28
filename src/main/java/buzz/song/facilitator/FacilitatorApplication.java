@@ -9,5 +9,4 @@ public class FacilitatorApplication {
 	public static void main(final String[] args) {
 		SpringApplication.run(FacilitatorApplication.class, args);
 	}
-
 }

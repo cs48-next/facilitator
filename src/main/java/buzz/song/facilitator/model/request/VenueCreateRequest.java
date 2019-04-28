@@ -34,7 +34,7 @@ public class VenueCreateRequest {
 		return latitude;
 	}
 
-	@JsonGetter("longitutde")
+	@JsonGetter("longitude")
 	public double getLongitude() {
 		return longitude;
 	}
