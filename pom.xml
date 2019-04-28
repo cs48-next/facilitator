@@ -19,7 +19,16 @@
 
 		<spring-boot.version>2.1.4.RELEASE</spring-boot.version>
 		<postgresql.version>42.2.5</postgresql.version>
-		<flyway.version>5.2.</flyway.version>
+		<flyway.version>5.2.4</flyway.version>
+
+		<maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+		<docker.maven.plugin.version>0.30.0</docker.maven.plugin.version>
+		<maven.scm.provider.gitexe.version>1.9.5</maven.scm.provider.gitexe.version>
+
+		<docker.skip>false</docker.skip>
+		<docker.cleanup>true</docker.cleanup>
+		<docker.image.name>facilitator</docker.image.name>
+
 	</properties>
 
 	<dependencies>
@@ -57,6 +66,44 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>${flyway.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${maven.release.plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-gitexe</artifactId>
+						<version>${maven.scm.provider.gitexe.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>${docker.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<logDate>default</logDate>
+					<verbose>true</verbose>
+					<skip>${docker.skip}</skip>
+					<images>
+						<image>
+							<name>${docker.image.name}</name>
+							<build>
+								<dockerFile>Dockerfile</dockerFile>
+								<cleanup>${docker.cleanup}</cleanup>
+								<tags>
+									<tag>${project.version}</tag>
+									<tag>latest</tag>
+								</tags>
+								<assembly>
+									<descriptor>assembly.xml</descriptor>
+								</assembly>
+							</build>
+						</image>
+					</images>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
