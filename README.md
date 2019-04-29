@@ -1,16 +1,18 @@
 # facilitator
 Facilitates backend services
-## Requirements
+## Installation
+### Prerequisites
 - Java 8
 - Apache Maven >= 3
-## Build
-### From a terminal
+- PostgreSQL server >= 12
+### Build
+#### From a terminal
 ```
 mvn clean install
 ```
-### From an IDE
+#### From an IDE
 Import the projects as existing Apache Maven projects
-## Setup
+### Setup
 We can run facilitator service directly from Maven:
 ```
 mvn spring-boot:run 
