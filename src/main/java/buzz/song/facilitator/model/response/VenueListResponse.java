@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 
 public class VenueListResponse {
@@ -60,7 +61,12 @@ public class VenueListResponse {
 
 		@Override
 		public int compareTo(final VenueListing o) {
-			return Double.compare(distance, o.distance);
+
+			final Comparator<VenueListing> comparator = Comparator
+					.comparing(VenueListing::getDistance)
+					.thenComparing(VenueListing::getVenueId);
+
+			return comparator.compare(this, o);
 		}
 	}
 }
