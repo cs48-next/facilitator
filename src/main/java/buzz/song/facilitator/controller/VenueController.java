@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -88,7 +90,7 @@ public class VenueController {
 										entry.getKey().getName(),
 										entry.getKey().getHostName(),
 										entry.getValue(),
-										now - entry.getKey().getCreatedOn().getTime()
+										now - Optional.ofNullable(entry.getKey().getCreatedOn()).map(Timestamp::getTime).orElse(now + 1)
 								)).collect(Collectors.toCollection(TreeSet::new))
 				);
 				logger.info("Found venues {}", venues);

@@ -31,11 +31,11 @@ public class Venue {
 	private double longitude;
 
 	@CreationTimestamp
-	@Column(name = "created_on")
+	@Column(name = "created_on", updatable = false)
 	private Timestamp createdOn;
 
 	@UpdateTimestamp
-	@Column(name = "modified_on")
+	@Column(name = "modified_on", updatable = false)
 	private Timestamp modifiedOn;
 
 	@JsonCreator
