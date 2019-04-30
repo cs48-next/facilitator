@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -89,12 +90,12 @@ public class Track implements Comparable<Track> {
 
 	@Override
 	public int compareTo(final Track o) {
-		final Stream<Vote> thisVotes = votes.stream();
-		final Stream<Vote> thatVotes = o.votes.stream();
-		return Integer.compare(
-				thatVotes.mapToInt(v -> v.isUpvote() ? 1 : -1).sum(),
-				thisVotes.mapToInt(v -> v.isUpvote() ? 1 : -1).sum()
-		);
+		final Comparator<Track> comparator = Comparator
+				.comparing((final Track track) -> track.votes.stream().mapToInt(v -> v.isUpvote() ? 1 : -1).sum())
+				.thenComparing(Track::getTrackId)
+				.thenComparing(Track::getVenueId);
+
+		return comparator.compare(o, this);
 	}
 
 	public static class TrackID implements Serializable {
