@@ -9,24 +9,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Represents a user request to create a {@link Venue}.
  */
 public class VenueCreateRequest {
-	private final String name;
+	private final String venueName;
+	private final String hostName;
 	private final double latitude;
 	private final double longitude;
 
 	@JsonCreator
 	public VenueCreateRequest(
-			@JsonProperty("name") final String name,
+			@JsonProperty("venue_name") final String venueName,
+			@JsonProperty("host_name") final String hostName,
 			@JsonProperty("latitude") final double latitude,
 			@JsonProperty("longitude") final double longitude
 	) {
-		this.name = name;
+		this.venueName = venueName;
+		this.hostName = hostName;
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
-	@JsonGetter("name")
-	public String getName() {
-		return name;
+	@JsonGetter("venue_name")
+	public String getVenueName() {
+		return venueName;
+	}
+
+	@JsonGetter("host_name")
+	public String getHostName() {
+		return hostName;
 	}
 
 	@JsonGetter("latitude")

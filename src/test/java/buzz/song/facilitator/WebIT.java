@@ -37,7 +37,7 @@ public class WebIT {
 
 	@Test
 	public void controllerTests() throws Exception {
-		final VenueCreateRequest createRequest = new VenueCreateRequest("venue", 200, 300);
+		final VenueCreateRequest createRequest = new VenueCreateRequest("venue", "host", 200, 300);
 		final String createPayload = objectMapper.writeValueAsString(createRequest);
 
 		final MvcResult createResult = mockMvc.perform(post("/venue")
@@ -49,6 +49,7 @@ public class WebIT {
 		final Venue venue = objectMapper.readValue(createActions.andReturn().getResponse().getContentAsString(), Venue.class);
 
 		Assert.assertEquals("venue", venue.getName());
+		Assert.assertEquals("host", venue.getHostName());
 		Assert.assertEquals(200, venue.getLatitude(), 0);
 		Assert.assertEquals(300, venue.getLongitude(), 0);
 

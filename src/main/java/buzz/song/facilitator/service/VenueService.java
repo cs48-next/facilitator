@@ -38,10 +38,11 @@ public class VenueService {
 	 * @param longitude longitude of GPS location
 	 * @return Future for created {@link Venue}
 	 */
-	public CompletableFuture<Venue> createVenue(final String name, final double latitude, final double longitude) {
+	public CompletableFuture<Venue> createVenue(final String name, final String hostName, final double latitude, final double longitude) {
 		final Venue venue = new Venue(
 				UUID.randomUUID().toString(),
 				name,
+				hostName,
 				new TreeSet<>(),
 				latitude,
 				longitude
