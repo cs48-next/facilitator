@@ -12,14 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.TreeSet;
@@ -30,6 +23,7 @@ import java.util.stream.Collectors;
  * Entry point for API requests related to venues.
  */
 @RestController
+@CrossOrigin
 public class VenueController {
 	private static final Logger logger = LoggerFactory.getLogger(VenueController.class);
 
@@ -47,16 +41,17 @@ public class VenueController {
 	public DeferredResult<Venue> createVenue(
 			@RequestBody final VenueCreateRequest createRequest
 	) {
-		final String name = createRequest.getName();
+		final String name = createRequest.getVenueName();
+		final String hostName = createRequest.getHostName();
 		final double latitude = createRequest.getLatitude();
 		final double longitude = createRequest.getLongitude();
 
-		logger.info("Received request to create venue {} at lat: {}, long: {}", name, latitude, longitude);
+		logger.info("Received request to create venue '{}' for '{}' at lat: {}, long: {}", name, hostName, latitude, longitude);
 
 		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.createVenue(name, latitude, longitude).whenCompleteAsync((venue, ex) -> {
+		venueService.createVenue(name, hostName, latitude, longitude).whenCompleteAsync((venue, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when creating venue", ex);
 				responseDeferred.setErrorResult(ex);
@@ -87,7 +82,10 @@ public class VenueController {
 				final VenueListResponse listing = new VenueListResponse(
 						venues.entrySet().stream()
 								.map(entry -> new VenueListResponse.VenueListing(
-										entry.getKey().getId(), entry.getKey().getName(), entry.getValue()
+										entry.getKey().getId(),
+										entry.getKey().getName(),
+										entry.getKey().getHostName(),
+										entry.getValue()
 								)).collect(Collectors.toCollection(TreeSet::new))
 				);
 				logger.info("Found venues {}", venues);

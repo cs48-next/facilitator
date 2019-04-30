@@ -24,14 +24,17 @@ public class VenueListResponse {
 	public static class VenueListing implements Comparable<VenueListing> {
 		private final String venueId;
 		private final String venueName;
+		private final String hostName;
 		private final double distance;
 
 		public VenueListing(@JsonProperty("venue_id") final String venueId,
 							@JsonProperty("venue_name") final String venueName,
+							@JsonProperty("host_name") final String hostName,
 							@JsonProperty("distance") final double distance
 		) {
 			this.venueId = venueId;
 			this.venueName = venueName;
+			this.hostName = hostName;
 			this.distance = distance;
 		}
 
@@ -43,6 +46,11 @@ public class VenueListResponse {
 		@JsonGetter("venue_name")
 		public String getVenueName() {
 			return venueName;
+		}
+
+		@JsonGetter("host_name")
+		public String getHostName() {
+			return hostName;
 		}
 
 		@JsonGetter("distance")
