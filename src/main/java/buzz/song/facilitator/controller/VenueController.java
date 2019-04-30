@@ -74,6 +74,8 @@ public class VenueController {
 		final DeferredResult<VenueListResponse> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
+		final long now = System.currentTimeMillis();
+
 		venueService.listVenues(latitude, longitude).whenCompleteAsync((venues, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when listing venues", ex);
@@ -85,7 +87,8 @@ public class VenueController {
 										entry.getKey().getId(),
 										entry.getKey().getName(),
 										entry.getKey().getHostName(),
-										entry.getValue()
+										entry.getValue(),
+										now - entry.getKey().getCreatedOn().getTime()
 								)).collect(Collectors.toCollection(TreeSet::new))
 				);
 				logger.info("Found venues {}", venues);

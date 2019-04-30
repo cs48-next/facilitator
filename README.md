@@ -33,7 +33,8 @@ Create a venue.
 ### Request Body
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-| `name` | String | Name of Venue | Yes |
+| `venue_name` | String | Name of Venue | Yes |
+| `host_name` | String | Name of Host | Yes |
 | `latitude` | Double | User location latitude | Yes |
 | `longitude` | Double | User location longitude | Yes |
 
@@ -41,7 +42,8 @@ Create a venue.
 ```bash
 curl -v -XPOST localhost:8080/venue -H'Content-Type: application/json' -d '
 {
-	"name": "my venue",
+	"venue_name": "my venue",
+	"host_name": "host",
 	"latitude" : 0,
 	"longitude" : 0
 }
@@ -52,6 +54,7 @@ curl -v -XPOST localhost:8080/venue -H'Content-Type: application/json' -d '
 {  
    "id":"89300432-97c2-4a2a-9787-795a96e5ad60",
    "name":"my venue",
+   "host_name":"host",
    "playlist":[],
    "latitude":0.0,
    "longitude":0.0
@@ -81,7 +84,9 @@ Returns `distance` in miles.
       {  
          "venue_id":"89300432-97c2-4a2a-9787-795a96e5ad60",
          "venue_name":"my venue",
-         "distance":1217.4615442168708
+         "host_name":"host",
+         "distance":1217.4615442168708,
+         "age_ms":1000
       }
    ]
 }
