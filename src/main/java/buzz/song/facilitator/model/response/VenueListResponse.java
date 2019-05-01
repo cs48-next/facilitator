@@ -72,6 +72,7 @@ public class VenueListResponse {
 
 			final Comparator<VenueListing> comparator = Comparator
 					.comparing(VenueListing::getDistance)
+					.thenComparing(VenueListing::getAgeMs)
 					.thenComparing(VenueListing::getVenueId);
 
 			return comparator.compare(this, o);
