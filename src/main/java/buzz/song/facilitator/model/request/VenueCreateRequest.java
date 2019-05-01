@@ -4,6 +4,7 @@ import buzz.song.facilitator.model.Venue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Represents a user request to create a {@link Venue}.
@@ -21,8 +22,8 @@ public class VenueCreateRequest {
 			@JsonProperty("latitude") final double latitude,
 			@JsonProperty("longitude") final double longitude
 	) {
-		this.venueName = venueName;
-		this.hostName = hostName;
+		this.venueName = Validate.notBlank(venueName);
+		this.hostName = Validate.notBlank(hostName);
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}

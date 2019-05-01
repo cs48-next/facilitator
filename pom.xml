@@ -29,6 +29,8 @@
 		<docker.cleanup>true</docker.cleanup>
 		<docker.image.name>facilitator</docker.image.name>
 
+		<commons.lang3.version>3.9</commons.lang3.version>
+
 	</properties>
 
 	<dependencies>
@@ -47,6 +49,11 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang3.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

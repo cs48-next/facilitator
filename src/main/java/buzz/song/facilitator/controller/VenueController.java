@@ -6,6 +6,7 @@ import buzz.song.facilitator.model.Vote;
 import buzz.song.facilitator.model.request.VenueCreateRequest;
 import buzz.song.facilitator.model.response.VenueListResponse;
 import buzz.song.facilitator.service.VenueService;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,7 @@ public class VenueController {
 	public DeferredResult<Venue> fetchVenue(
 			@PathVariable("venue_id") final String venueId
 	) {
+		Validate.notBlank(venueId);
 		logger.info("Received request to fetch venue {}", venueId);
 
 		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
@@ -127,6 +129,8 @@ public class VenueController {
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
 	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(trackId);
 		logger.info("Received request to propose track {} to venue {}", trackId, venueId);
 
 		final DeferredResult<Track> responseDeferred = new DeferredResult<>(controllerTimeout);
@@ -150,6 +154,8 @@ public class VenueController {
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
 	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(trackId);
 		logger.info("Received request to upvote track {} for venue {}", trackId, venueId);
 
 		final DeferredResult<Vote> responseDeferred = new DeferredResult<>(controllerTimeout);
@@ -173,6 +179,8 @@ public class VenueController {
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
 	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(trackId);
 		logger.info("Received request to downvote track {} for venue {}", trackId, venueId);
 
 		final DeferredResult<Vote> responseDeferred = new DeferredResult<>(controllerTimeout);
@@ -196,6 +204,8 @@ public class VenueController {
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId
 	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(trackId);
 		logger.info("Received request to delete vote on track {} for venue {}", trackId, venueId);
 
 		final DeferredResult<Void> responseDeferred = new DeferredResult<>(controllerTimeout);
