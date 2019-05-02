@@ -3,22 +3,13 @@ package buzz.song.facilitator.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.SortNatural;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Represents a track in a {@link Venue} playlist.
@@ -33,8 +24,8 @@ public class Track implements Comparable<Track> {
 	private String trackId;
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumns({
-			@JoinColumn(name = "venueId", referencedColumnName = "venueId"),
-			@JoinColumn(name = "trackId", referencedColumnName = "trackId")
+			@JoinColumn(name = "venueId", referencedColumnName = "venueId", updatable = false),
+			@JoinColumn(name = "trackId", referencedColumnName = "trackId", updatable = false)
 	})
 	private Set<Vote> votes;
 

@@ -94,7 +94,7 @@ public class VenueController {
 										now - Optional.ofNullable(entry.getKey().getCreatedOn()).map(Timestamp::getTime).orElse(now + 1)
 								)).collect(Collectors.toCollection(TreeSet::new))
 				);
-				logger.info("Found venues {}", venues);
+				logger.info("Found {} venues", venues.size());
 				responseDeferred.setResult(listing);
 			}
 		});
