@@ -19,7 +19,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -46,15 +45,16 @@ public class VenueController {
 	) {
 		final String name = createRequest.getVenueName();
 		final String hostName = createRequest.getHostName();
+		final String hostId = createRequest.getHostId();
 		final double latitude = createRequest.getLatitude();
 		final double longitude = createRequest.getLongitude();
 
-		logger.info("Received request to create venue '{}' for '{}' at lat: {}, long: {}", name, hostName, latitude, longitude);
+		logger.info("Received request to create venue '{}' for '{}'(id: {}) at lat: {}, long: {}", name, hostName, hostId, latitude, longitude);
 
 		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.createVenue(name, hostName, latitude, longitude).whenCompleteAsync((venue, ex) -> {
+		venueService.createVenue(name, hostName, hostId, latitude, longitude).whenCompleteAsync((venue, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when creating venue", ex);
 				responseDeferred.setErrorResult(ex);
@@ -149,19 +149,21 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@PutMapping("/vote/{venue_id}/{track_id}/upvote")
+	@PutMapping("/vote/{venue_id}/{track_id}/{user_id}/upvote")
 	public DeferredResult<Vote> upvoteTrack(
 			@PathVariable("venue_id") final String venueId,
-			@PathVariable("track_id") final String trackId
+			@PathVariable("track_id") final String trackId,
+			@PathVariable("user_id") final String userId
 	) {
 		Validate.notBlank(venueId);
 		Validate.notBlank(trackId);
-		logger.info("Received request to upvote track {} for venue {}", trackId, venueId);
+		Validate.notBlank(userId);
+		logger.info("Received request to upvote track {} for venue {} on behalf of user {}", trackId, venueId, userId);
 
 		final DeferredResult<Vote> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.voteForTrack(venueId, trackId, UUID.randomUUID().toString(), true).whenCompleteAsync((vote, ex) -> {
+		venueService.voteForTrack(venueId, trackId, userId, true).whenCompleteAsync((vote, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when upvoting for track", ex);
 				responseDeferred.setErrorResult(ex);
@@ -174,19 +176,21 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@PutMapping("/vote/{venue_id}/{track_id}/downvote")
+	@PutMapping("/vote/{venue_id}/{track_id}/{user_id}/downvote")
 	public DeferredResult<Vote> downvoteTrack(
 			@PathVariable("venue_id") final String venueId,
-			@PathVariable("track_id") final String trackId
+			@PathVariable("track_id") final String trackId,
+			@PathVariable("user_id") final String userId
 	) {
 		Validate.notBlank(venueId);
 		Validate.notBlank(trackId);
-		logger.info("Received request to downvote track {} for venue {}", trackId, venueId);
+		Validate.notBlank(userId);
+		logger.info("Received request to downvote track {} for venue {} on behalf of user {}", trackId, venueId, userId);
 
 		final DeferredResult<Vote> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.voteForTrack(venueId, trackId, UUID.randomUUID().toString(), false).whenCompleteAsync((vote, ex) -> {
+		venueService.voteForTrack(venueId, trackId, userId, false).whenCompleteAsync((vote, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when downvoting for track", ex);
 				responseDeferred.setErrorResult(ex);
@@ -199,19 +203,21 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@DeleteMapping("/vote/{venue_id}/{track_id}")
+	@DeleteMapping("/vote/{venue_id}/{track_id}/{user_id")
 	public DeferredResult<Void> deleteVote(
 			@PathVariable("venue_id") final String venueId,
-			@PathVariable("track_id") final String trackId
+			@PathVariable("track_id") final String trackId,
+			@PathVariable("user_id") final String userId
 	) {
 		Validate.notBlank(venueId);
 		Validate.notBlank(trackId);
-		logger.info("Received request to delete vote on track {} for venue {}", trackId, venueId);
+		Validate.notBlank(userId);
+		logger.info("Received request to delete vote on track {} for venue {} on behalf of user {}", trackId, venueId, userId);
 
 		final DeferredResult<Void> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.unvoteForTrack(venueId, trackId, UUID.randomUUID().toString()).whenCompleteAsync((_none, ex) -> {
+		venueService.unvoteForTrack(venueId, trackId, userId).whenCompleteAsync((_none, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when deleting vote for track", ex);
 				responseDeferred.setErrorResult(ex);

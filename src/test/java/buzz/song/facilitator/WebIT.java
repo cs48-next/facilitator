@@ -37,7 +37,7 @@ public class WebIT {
 
 	@Test
 	public void controllerTests() throws Exception {
-		final VenueCreateRequest createRequest = new VenueCreateRequest("venue", "host", 200, 300);
+		final VenueCreateRequest createRequest = new VenueCreateRequest("venue", "host", "host_1", 200, 300);
 		final String createPayload = objectMapper.writeValueAsString(createRequest);
 
 		final MvcResult createResult = mockMvc.perform(post("/venue")
@@ -62,7 +62,7 @@ public class WebIT {
 		Assert.assertEquals(venue.getId(), track.getVenueId());
 		Assert.assertEquals(0, track.getVotes().size());
 
-		final MvcResult voteResult = mockMvc.perform(put("/vote/" + venue.getId() + "/Tra.12/upvote")).andReturn();
+		final MvcResult voteResult = mockMvc.perform(put("/vote/" + venue.getId() + "/Tra.12/user_1/upvote")).andReturn();
 		final ResultActions voteActions = mockMvc.perform(asyncDispatch(voteResult)).andExpect(status().isOk());
 
 		final Vote vote = objectMapper.readValue(voteActions.andReturn().getResponse().getContentAsString(), Vote.class);

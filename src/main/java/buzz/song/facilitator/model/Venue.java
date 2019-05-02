@@ -23,6 +23,7 @@ public class Venue {
 	private String id;
 	private String name;
 	private String hostName;
+	private String hostId;
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "venueId", referencedColumnName = "id")
 	@SortNatural
@@ -43,6 +44,7 @@ public class Venue {
 			@NotNull @JsonProperty("id") final String id,
 			@NotNull @JsonProperty("name") final String name,
 			@NotNull @JsonProperty("host_name") final String hostName,
+			@NotNull @JsonProperty("host_id") final String hostId,
 			@NotNull @JsonProperty("playlist") final SortedSet<Track> playlist,
 			@JsonProperty("latitude") final double latitude,
 			@JsonProperty("longitude") final double longitude
@@ -50,6 +52,7 @@ public class Venue {
 		this.id = id;
 		this.name = name;
 		this.hostName = hostName;
+		this.hostId = hostId;
 		this.playlist = playlist;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -70,6 +73,11 @@ public class Venue {
 	@JsonGetter("host_name")
 	public String getHostName() {
 		return hostName;
+	}
+
+	@JsonGetter("host_id")
+	public String getHostId() {
+		return hostId;
 	}
 
 	@JsonGetter("playlist")
@@ -102,6 +110,7 @@ public class Venue {
 		return "Venue{" + "id='" + id + '\'' +
 				", name='" + name + '\'' +
 				", hostName='" + hostName + '\'' +
+				", hostId='" + hostId + '\'' +
 				", playlist=" + playlist +
 				", latitude=" + latitude +
 				", longitude=" + longitude +
