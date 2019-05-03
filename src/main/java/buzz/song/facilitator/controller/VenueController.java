@@ -203,7 +203,7 @@ public class VenueController {
 		return responseDeferred;
 	}
 
-	@DeleteMapping("/vote/{venue_id}/{track_id}/{user_id")
+	@DeleteMapping("/vote/{venue_id}/{track_id}/{user_id}")
 	public DeferredResult<Void> deleteVote(
 			@PathVariable("venue_id") final String venueId,
 			@PathVariable("track_id") final String trackId,
