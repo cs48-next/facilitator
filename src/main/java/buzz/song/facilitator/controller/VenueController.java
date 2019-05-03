@@ -124,6 +124,29 @@ public class VenueController {
 		return responseDeferred;
 	}
 
+	@PostMapping("/venue/{venue_id}/next")
+	public DeferredResult<Venue> nextTrack(
+			@PathVariable("venue_id") final String venueId
+	) {
+		Validate.notBlank(venueId);
+		logger.info("Received request to get next track for venue {}", venueId);
+
+		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
+		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+		venueService.venueNextTrack(venueId).whenCompleteAsync((venue, ex) -> {
+			if (ex != null) {
+				logger.error("Received error when updating venue track", ex);
+				responseDeferred.setErrorResult(ex);
+			} else {
+				logger.info("Successfully updated venue track {}", venue);
+				responseDeferred.setResult(venue);
+			}
+		});
+		return responseDeferred;
+	}
+
+
 	@PutMapping("/track/{venue_id}/{track_id}")
 	public DeferredResult<Track> proposeTrack(
 			@PathVariable("venue_id") final String venueId,

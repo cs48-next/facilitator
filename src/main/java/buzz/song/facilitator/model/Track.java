@@ -22,7 +22,7 @@ public class Track implements Comparable<Track> {
 	private String venueId;
 	@Id
 	private String trackId;
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumns({
 			@JoinColumn(name = "venueId", referencedColumnName = "venueId", updatable = false),
 			@JoinColumn(name = "trackId", referencedColumnName = "trackId", updatable = false)

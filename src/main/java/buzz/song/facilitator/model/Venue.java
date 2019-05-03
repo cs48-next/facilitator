@@ -3,12 +3,14 @@ package buzz.song.facilitator.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SortComparator;
-import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.Validate;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.SortedSet;
@@ -24,8 +26,9 @@ public class Venue {
 	private String name;
 	private String hostName;
 	private String hostId;
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "venueId", referencedColumnName = "id")
+	private String currentTrackId;
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
 	@SortNatural
 	private SortedSet<Track> playlist;
 	private double latitude;
@@ -45,6 +48,7 @@ public class Venue {
 			@NotNull @JsonProperty("name") final String name,
 			@NotNull @JsonProperty("host_name") final String hostName,
 			@NotNull @JsonProperty("host_id") final String hostId,
+			@NotNull @JsonProperty("current_track_id") final String currentTrackId,
 			@NotNull @JsonProperty("playlist") final SortedSet<Track> playlist,
 			@JsonProperty("latitude") final double latitude,
 			@JsonProperty("longitude") final double longitude
@@ -53,6 +57,7 @@ public class Venue {
 		this.name = name;
 		this.hostName = hostName;
 		this.hostId = hostId;
+		this.currentTrackId = currentTrackId;
 		this.playlist = playlist;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -78,6 +83,15 @@ public class Venue {
 	@JsonGetter("host_id")
 	public String getHostId() {
 		return hostId;
+	}
+
+	@JsonGetter("current_track_id")
+	public String getCurrentTrackId() {
+		return currentTrackId;
+	}
+
+	public void setCurrentTrackId(final String currentTrackId) {
+		this.currentTrackId = currentTrackId;
 	}
 
 	@JsonGetter("playlist")
@@ -111,6 +125,7 @@ public class Venue {
 				", name='" + name + '\'' +
 				", hostName='" + hostName + '\'' +
 				", hostId='" + hostId + '\'' +
+				", currentTrackId='" + currentTrackId + '\'' +
 				", playlist=" + playlist +
 				", latitude=" + latitude +
 				", longitude=" + longitude +
