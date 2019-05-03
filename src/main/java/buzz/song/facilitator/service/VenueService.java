@@ -9,11 +9,7 @@ import buzz.song.facilitator.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -44,11 +40,32 @@ public class VenueService {
 				name,
 				hostName,
 				hostId,
+				null,
 				new TreeSet<>(),
 				latitude,
 				longitude
 		);
-		return CompletableFuture.completedFuture(venueRepo.save(venue));
+		return CompletableFuture.supplyAsync(() -> venueRepo.save(venue));
+	}
+
+	/**
+	 * Pops the top track from the playlist and sets it as {@link Venue} current track
+	 * @param venueId {@link Venue} with ID to get next track for
+	 * @return updated {@link Venue}
+	 */
+	public CompletableFuture<Venue> venueNextTrack(final String venueId) {
+		return CompletableFuture.supplyAsync(() -> {
+			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
+			if (!venue.getPlaylist().isEmpty()) {
+				final Track first = venue.getPlaylist().first();
+				venue.getPlaylist().remove(first);
+				venue.setCurrentTrackId(first.getTrackId());
+			} else {
+				venue.setCurrentTrackId(null);
+			}
+
+			return venueRepo.save(venue);
+		});
 	}
 
 	/**

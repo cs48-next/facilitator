@@ -53,21 +53,30 @@ public class WebIT {
 		Assert.assertEquals(200, venue.getLatitude(), 0);
 		Assert.assertEquals(300, venue.getLongitude(), 0);
 
-		final MvcResult proposeResult = mockMvc.perform(put("/track/" + venue.getId() + "/Tra.12")).andReturn();
-		final ResultActions proposeActions = mockMvc.perform(asyncDispatch(proposeResult)).andExpect(status().isOk());
+		final MvcResult proposeResult1 = mockMvc.perform(put("/track/" + venue.getId() + "/Tra.1")).andReturn();
+		final ResultActions proposeActions1 = mockMvc.perform(asyncDispatch(proposeResult1)).andExpect(status().isOk());
 
-		final Track track = objectMapper.readValue(proposeActions.andReturn().getResponse().getContentAsString(), Track.class);
+		final Track track1 = objectMapper.readValue(proposeActions1.andReturn().getResponse().getContentAsString(), Track.class);
 
-		Assert.assertEquals("Tra.12", track.getTrackId());
-		Assert.assertEquals(venue.getId(), track.getVenueId());
-		Assert.assertEquals(0, track.getVotes().size());
+		Assert.assertEquals("Tra.1", track1.getTrackId());
+		Assert.assertEquals(venue.getId(), track1.getVenueId());
+		Assert.assertEquals(0, track1.getVotes().size());
 
-		final MvcResult voteResult = mockMvc.perform(put("/vote/" + venue.getId() + "/Tra.12/user_1/upvote")).andReturn();
+		final MvcResult proposeResult2 = mockMvc.perform(put("/track/" + venue.getId() + "/Tra.2")).andReturn();
+		final ResultActions proposeActions2 = mockMvc.perform(asyncDispatch(proposeResult2)).andExpect(status().isOk());
+
+		final Track track2 = objectMapper.readValue(proposeActions2.andReturn().getResponse().getContentAsString(), Track.class);
+
+		Assert.assertEquals("Tra.2", track2.getTrackId());
+		Assert.assertEquals(venue.getId(), track2.getVenueId());
+		Assert.assertEquals(0, track2.getVotes().size());
+
+		final MvcResult voteResult = mockMvc.perform(put("/vote/" + venue.getId() + "/Tra.1/user_1/upvote")).andReturn();
 		final ResultActions voteActions = mockMvc.perform(asyncDispatch(voteResult)).andExpect(status().isOk());
 
 		final Vote vote = objectMapper.readValue(voteActions.andReturn().getResponse().getContentAsString(), Vote.class);
 
-		Assert.assertEquals("Tra.12", vote.getTrackId());
+		Assert.assertEquals("Tra.1", vote.getTrackId());
 		Assert.assertEquals(venue.getId(), vote.getVenueId());
 		Assert.assertTrue(vote.isUpvote());
 
@@ -87,8 +96,32 @@ public class WebIT {
 
 		final Venue fetchedVenue = objectMapper.readValue(fetchActions.andReturn().getResponse().getContentAsString(), Venue.class);
 
-		Assert.assertEquals(1, fetchedVenue.getPlaylist().size());
+		Assert.assertEquals(2, fetchedVenue.getPlaylist().size());
 		Assert.assertEquals(1, fetchedVenue.getPlaylist().first().getVotes().stream().mapToInt(v -> v.isUpvote() ? 1 : -1).sum());
 
+		final MvcResult nextSong1 = mockMvc.perform(post("/venue/" + venue.getId() + "/next")).andReturn();
+		final ResultActions nextActions1 = mockMvc.perform(asyncDispatch(nextSong1)).andExpect(status().isOk());
+
+		final Venue nextSongVenue1 = objectMapper.readValue(nextActions1.andReturn().getResponse().getContentAsString(), Venue.class);
+
+		Assert.assertEquals("Tra.1", nextSongVenue1.getCurrentTrackId());
+		Assert.assertEquals(1, nextSongVenue1.getPlaylist().size());
+		Assert.assertEquals("Tra.2", nextSongVenue1.getPlaylist().first().getTrackId());
+
+		final MvcResult nextSong2 = mockMvc.perform(post("/venue/" + venue.getId() + "/next")).andReturn();
+		final ResultActions nextActions2 = mockMvc.perform(asyncDispatch(nextSong2)).andExpect(status().isOk());
+
+		final Venue nextSongVenue2 = objectMapper.readValue(nextActions2.andReturn().getResponse().getContentAsString(), Venue.class);
+
+		Assert.assertEquals("Tra.2", nextSongVenue2.getCurrentTrackId());
+		Assert.assertEquals(0, nextSongVenue2.getPlaylist().size());
+
+		final MvcResult nextSong3 = mockMvc.perform(post("/venue/" + venue.getId() + "/next")).andReturn();
+		final ResultActions nextActions3 = mockMvc.perform(asyncDispatch(nextSong3)).andExpect(status().isOk());
+
+		final Venue nextSongVenue3 = objectMapper.readValue(nextActions3.andReturn().getResponse().getContentAsString(), Venue.class);
+
+		Assert.assertEquals(null, nextSongVenue3.getCurrentTrackId());
+		Assert.assertEquals(0, nextSongVenue3.getPlaylist().size());
 	}
 }
