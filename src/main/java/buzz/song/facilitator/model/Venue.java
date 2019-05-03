@@ -34,6 +34,10 @@ public class Venue {
 	private double latitude;
 	private double longitude;
 
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
+	private VenueStats venueStats;
+
 	@CreationTimestamp
 	@Column(name = "created_on", updatable = false)
 	private Timestamp createdOn;
