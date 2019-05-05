@@ -3,10 +3,13 @@ package buzz.song.facilitator.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
@@ -20,14 +23,24 @@ import java.util.Set;
 public class Track implements Comparable<Track> {
 	@Id
 	private String venueId;
+
 	@Id
 	private String trackId;
+
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumns({
 			@JoinColumn(name = "venueId", referencedColumnName = "venueId", updatable = false),
 			@JoinColumn(name = "trackId", referencedColumnName = "trackId", updatable = false)
 	})
 	private Set<Vote> votes;
+
+	@CreationTimestamp
+	@Column(name = "created_on", updatable = false)
+	private Timestamp createdOn;
+
+	@UpdateTimestamp
+	@Column(name = "modified_on", updatable = false)
+	private Timestamp modifiedOn;
 
 	@JsonCreator
 	public Track(
@@ -55,6 +68,16 @@ public class Track implements Comparable<Track> {
 	@JsonGetter("votes")
 	public Set<Vote> getVotes() {
 		return votes;
+	}
+
+	@JsonGetter("created_on")
+	public Timestamp getCreatedOn() {
+		return createdOn;
+	}
+
+	@JsonGetter("modified_on")
+	public Timestamp getModifiedOn() {
+		return modifiedOn;
 	}
 
 	@Override

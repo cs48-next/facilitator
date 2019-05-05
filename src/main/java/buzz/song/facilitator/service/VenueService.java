@@ -3,9 +3,11 @@ package buzz.song.facilitator.service;
 import buzz.song.facilitator.model.Track;
 import buzz.song.facilitator.model.Venue;
 import buzz.song.facilitator.model.Vote;
+import buzz.song.facilitator.model.VoteSkip;
 import buzz.song.facilitator.repository.TrackRepository;
 import buzz.song.facilitator.repository.VenueRepository;
 import buzz.song.facilitator.repository.VoteRepository;
+import buzz.song.facilitator.repository.VoteSkipRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,19 @@ public class VenueService {
 	private final VenueRepository venueRepo;
 	private final TrackRepository trackRepo;
 	private final VoteRepository voteRepo;
+	private final VoteSkipRepo voteSkipRepo;
 
 	@Autowired
-	public VenueService(final VenueRepository venueRepo, final TrackRepository trackRepo, final VoteRepository voteRepo) {
+	public VenueService(
+			final VenueRepository venueRepo,
+			final TrackRepository trackRepo,
+			final VoteRepository voteRepo,
+			final VoteSkipRepo voteSkipRepo
+	) {
 		this.venueRepo = venueRepo;
 		this.trackRepo = trackRepo;
 		this.voteRepo = voteRepo;
+		this.voteSkipRepo = voteSkipRepo;
 	}
 
 	/**
@@ -40,6 +49,7 @@ public class VenueService {
 				name,
 				hostName,
 				hostId,
+				new HashSet<>(),
 				null,
 				new TreeSet<>(),
 				latitude,
@@ -50,6 +60,7 @@ public class VenueService {
 
 	/**
 	 * Pops the top track from the playlist and sets it as {@link Venue} current track
+	 *
 	 * @param venueId {@link Venue} with ID to get next track for
 	 * @return updated {@link Venue}
 	 */
@@ -108,6 +119,30 @@ public class VenueService {
 				upvote
 		);
 		return CompletableFuture.supplyAsync(() -> voteRepo.save(vote));
+	}
+
+	/**
+	 * Vote to skip track on behalf of a user
+	 *
+	 * @param venueId {@link Venue} to vote to skip current track for
+	 * @param userId  user to voteskip on behalf of
+	 * @return created {@link VoteSkip} object Future
+	 */
+	public CompletableFuture<VoteSkip> voteskipTrack(final String venueId, final String userId) {
+		final VoteSkip voteSkip = new VoteSkip(venueId, userId);
+		return CompletableFuture.supplyAsync(() -> voteSkipRepo.save(voteSkip));
+	}
+
+	/**
+	 * Removes a user's voteskip for current track in a venue
+	 *
+	 * @param venueId {@link Venue} to remove voteskip for
+	 * @param userId  User to remove voteskip on behalf of
+	 * @return Future
+	 */
+	public CompletableFuture<Void> unvoteskipTrack(final String venueId, final String userId) {
+		final VoteSkip.VoteSkipID id = new VoteSkip.VoteSkipID(venueId, userId);
+		return CompletableFuture.runAsync(() -> voteSkipRepo.deleteById(id));
 	}
 
 	/**

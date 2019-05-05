@@ -3,6 +3,7 @@ package buzz.song.facilitator;
 import buzz.song.facilitator.model.Track;
 import buzz.song.facilitator.model.Venue;
 import buzz.song.facilitator.model.Vote;
+import buzz.song.facilitator.model.VoteSkip;
 import buzz.song.facilitator.model.request.VenueCreateRequest;
 import buzz.song.facilitator.model.response.VenueListResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -121,7 +122,22 @@ public class WebIT {
 
 		final Venue nextSongVenue3 = objectMapper.readValue(nextActions3.andReturn().getResponse().getContentAsString(), Venue.class);
 
-		Assert.assertEquals(null, nextSongVenue3.getCurrentTrackId());
+		Assert.assertNull(nextSongVenue3.getCurrentTrackId());
 		Assert.assertEquals(0, nextSongVenue3.getPlaylist().size());
+
+		final MvcResult voteSkip = mockMvc.perform(put("/voteskip/" + venue.getId() + "/user_1")).andReturn();
+		final ResultActions voteSkipActions = mockMvc.perform(asyncDispatch(voteSkip)).andExpect(status().isOk());
+
+		final VoteSkip skip = objectMapper.readValue(voteSkipActions.andReturn().getResponse().getContentAsString(), VoteSkip.class);
+
+		Assert.assertEquals(venue.getId(), skip.getVenueId());
+		Assert.assertEquals("user_1", skip.getUserId());
+
+		final MvcResult fetchVenue2 = mockMvc.perform(get("/venue/" + venue.getId())).andReturn();
+		final ResultActions fetchActions2 = mockMvc.perform(asyncDispatch(fetchVenue2)).andExpect(status().isOk());
+		final Venue fetchedVenue2 = objectMapper.readValue(fetchActions2.andReturn().getResponse().getContentAsString(), Venue.class);
+
+		Assert.assertEquals(1, fetchedVenue2.getVoteSkips().size());
+		Assert.assertEquals(skip, fetchedVenue2.getVoteSkips().iterator().next());
 	}
 }
