@@ -9,6 +9,7 @@ import buzz.song.facilitator.repository.VenueRepository;
 import buzz.song.facilitator.repository.VoteRepository;
 import buzz.song.facilitator.repository.VoteSkipRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +23,9 @@ public class VenueService {
 	private final TrackRepository trackRepo;
 	private final VoteRepository voteRepo;
 	private final VoteSkipRepo voteSkipRepo;
+
+	@Value("${venue.voteskip_threshold}")
+	private int voteskipThreshold;
 
 	@Autowired
 	public VenueService(
@@ -74,7 +78,7 @@ public class VenueService {
 			} else {
 				venue.setCurrentTrackId(null);
 			}
-
+			venue.getVoteSkips().clear();
 			return venueRepo.save(venue);
 		});
 	}
@@ -130,7 +134,15 @@ public class VenueService {
 	 */
 	public CompletableFuture<VoteSkip> voteskipTrack(final String venueId, final String userId) {
 		final VoteSkip voteSkip = new VoteSkip(venueId, userId);
-		return CompletableFuture.supplyAsync(() -> voteSkipRepo.save(voteSkip));
+		return CompletableFuture.supplyAsync(() -> {
+			final VoteSkip created = voteSkipRepo.save(voteSkip);
+			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
+			if (venue.getVoteSkips().size() >= voteskipThreshold) {
+				venueNextTrack(venueId).join();
+			}
+			return created;
+		});
+
 	}
 
 	/**

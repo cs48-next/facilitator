@@ -34,7 +34,7 @@ public class Venue {
 
 	private String currentTrackId;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
 	private Set<VoteSkip> voteSkips;
 
