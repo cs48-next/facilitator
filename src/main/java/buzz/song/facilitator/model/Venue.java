@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -21,21 +22,33 @@ import java.util.SortedSet;
 @Entity
 @Table(name = "venue")
 public class Venue {
+
 	@Id
 	private String id;
+
 	private String name;
+
 	private String hostName;
+
 	private String hostId;
+
 	private String currentTrackId;
+
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
+	private Set<VoteSkip> voteSkips;
+
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
 	@SortNatural
 	private SortedSet<Track> playlist;
+
 	private double latitude;
+
 	private double longitude;
 
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
+	@JoinColumn(name = "venueId", updatable = false)
 	private VenueStats venueStats;
 
 	@CreationTimestamp
@@ -52,6 +65,7 @@ public class Venue {
 			@NotNull @JsonProperty("name") final String name,
 			@NotNull @JsonProperty("host_name") final String hostName,
 			@NotNull @JsonProperty("host_id") final String hostId,
+			@NotNull @JsonProperty("vote_skips") final Set<VoteSkip> voteSkips,
 			@NotNull @JsonProperty("current_track_id") final String currentTrackId,
 			@NotNull @JsonProperty("playlist") final SortedSet<Track> playlist,
 			@JsonProperty("latitude") final double latitude,
@@ -61,6 +75,7 @@ public class Venue {
 		this.name = name;
 		this.hostName = hostName;
 		this.hostId = hostId;
+		this.voteSkips = voteSkips;
 		this.currentTrackId = currentTrackId;
 		this.playlist = playlist;
 		this.latitude = latitude;
@@ -98,6 +113,11 @@ public class Venue {
 		this.currentTrackId = currentTrackId;
 	}
 
+	@JsonGetter("vote_skips")
+	public Set<VoteSkip> getVoteSkips() {
+		return voteSkips;
+	}
+
 	@JsonGetter("playlist")
 	public SortedSet<Track> getPlaylist() {
 		return playlist;
@@ -129,6 +149,7 @@ public class Venue {
 				", name='" + name + '\'' +
 				", hostName='" + hostName + '\'' +
 				", hostId='" + hostId + '\'' +
+				", voteSkips='" + voteSkips + '\'' +
 				", currentTrackId='" + currentTrackId + '\'' +
 				", playlist=" + playlist +
 				", latitude=" + latitude +

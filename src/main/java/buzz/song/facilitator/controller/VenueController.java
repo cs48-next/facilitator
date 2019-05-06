@@ -3,6 +3,7 @@ package buzz.song.facilitator.controller;
 import buzz.song.facilitator.model.Track;
 import buzz.song.facilitator.model.Venue;
 import buzz.song.facilitator.model.Vote;
+import buzz.song.facilitator.model.VoteSkip;
 import buzz.song.facilitator.model.request.VenueCreateRequest;
 import buzz.song.facilitator.model.response.VenueListResponse;
 import buzz.song.facilitator.service.VenueService;
@@ -246,6 +247,56 @@ public class VenueController {
 				responseDeferred.setErrorResult(ex);
 			} else {
 				logger.info("Successfully deleted voted on track {} to venue {}", trackId, venueId);
+				responseDeferred.setResult(null);
+			}
+		});
+
+		return responseDeferred;
+	}
+
+	@PutMapping("/voteskip/{venue_id}/{user_id}")
+	public DeferredResult<VoteSkip> voteskipTrack(
+			@PathVariable("venue_id") final String venueId,
+			@PathVariable("user_id") final String userId
+	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(userId);
+		logger.info("Received request to voteskip current track for venue {} on behalf of user {}", venueId, userId);
+
+		final DeferredResult<VoteSkip> responseDeferred = new DeferredResult<>(controllerTimeout);
+		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+		venueService.voteskipTrack(venueId, userId).whenCompleteAsync((vote, ex) -> {
+			if (ex != null) {
+				logger.error("Received error when voteskipping track", ex);
+				responseDeferred.setErrorResult(ex);
+			} else {
+				logger.info("Successfully voteskipped for user {} on venue {}", userId, venueId);
+				responseDeferred.setResult(vote);
+			}
+		});
+
+		return responseDeferred;
+	}
+
+	@DeleteMapping("/voteskip/{venue_id}/{user_id}")
+	public DeferredResult<Void> deleteVoteskip(
+			@PathVariable("venue_id") final String venueId,
+			@PathVariable("user_id") final String userId
+	) {
+		Validate.notBlank(venueId);
+		Validate.notBlank(userId);
+		logger.info("Received request to delete voteskip for venue {} on behalf of user {}", venueId, userId);
+
+		final DeferredResult<Void> responseDeferred = new DeferredResult<>(controllerTimeout);
+		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+		venueService.unvoteskipTrack(venueId, userId).whenCompleteAsync((_none, ex) -> {
+			if (ex != null) {
+				logger.error("Received error when deleting voteskip for venue", ex);
+				responseDeferred.setErrorResult(ex);
+			} else {
+				logger.info("Successfully deleted voteskip for user {} on  venue {}", userId, venueId);
 				responseDeferred.setResult(null);
 			}
 		});

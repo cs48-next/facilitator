@@ -3,11 +3,15 @@ package buzz.song.facilitator.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.lang.NonNull;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -15,11 +19,20 @@ import java.util.Objects;
 public class VenueStats {
     @Id
     private String venueId;
+
     private int totalTracksPlayed;
     private int totalTracksSkipped;
     private int totalTracksProposed;
     private int totalTrackUpvotes;
     private int totalTrackDownvotes;
+
+    @CreationTimestamp
+    @Column(name = "created_on", updatable = false)
+    private Timestamp createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "modified_on", updatable = false)
+    private Timestamp modifiedOn;
 
     @JsonCreator
     public VenueStats(
@@ -92,6 +105,16 @@ public class VenueStats {
 
     public void setTotalTrackDownvotes(int totalTrackDownvotes) {
         this.totalTrackDownvotes = totalTrackDownvotes;
+    }
+
+    @JsonGetter("created_on")
+    public Timestamp getCreatedOn() {
+        return createdOn;
+    }
+
+    @JsonGetter("modified_on")
+    public Timestamp getModifiedOn() {
+        return modifiedOn;
     }
 
     @Override
