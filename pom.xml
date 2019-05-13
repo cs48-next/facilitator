@@ -28,6 +28,7 @@
 		<docker.skip>false</docker.skip>
 		<docker.cleanup>true</docker.cleanup>
 		<docker.image.name>facilitator</docker.image.name>
+		<docker.image.tag>latest</docker.image.tag>
 
 		<commons.lang3.version>3.9</commons.lang3.version>
 
@@ -104,6 +105,15 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>${docker.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>build-image</id>
+						<phase>install</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<logDate>default</logDate>
 					<verbose>true</verbose>
@@ -116,7 +126,7 @@
 								<cleanup>${docker.cleanup}</cleanup>
 								<tags>
 									<tag>${project.version}</tag>
-									<tag>latest</tag>
+									<tag>${docker.image.tag}</tag>
 								</tags>
 								<assembly>
 									<descriptor>assembly.xml</descriptor>

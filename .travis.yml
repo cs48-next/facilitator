@@ -1,9 +1,35 @@
 sudo: required
 language: java
 jdk: oraclejdk8
- 
+
+cache:
+  directories:
+  - $HOME/.m2    
+  - $HOME/google-cloud-sdk
+
 services:
 - docker
 
+env:
+  global:
+  - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
+  - IMAGE_NAME=facilitator
+  - PROJECT_NAME=maximal-brace-238118
+  - COMPUTE_ZONE=us-west2-b  
+  - CLUSTER_NAME=production-cluster
+  - NODE_ENV=CI
+before_install:
+- if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+- source /home/travis/google-cloud-sdk/path.bash.inc
+- gcloud --quiet version
+- gcloud --quiet components update kubectl
+- echo $GCLOUD_SERVICE_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
+- gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+- gcloud config set compute/zone $COMPUTE_ZONE
+- gcloud config set project $PROJECT_NAME
+- gcloud container clusters get-credentials $CLUSTER_NAME
 script:
-- mvn clean install -B
+- mvn clean install -B -Ddocker.image.tag=$TRAVIS_COMMIT
+- gcloud docker -- push gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT
+- gcloud --quiet container images add-tag gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT gcr.io/$PROJECT_NAME/$IMAGE_NAME:latest
+- kubectl set image statefulset/${IMAGE_NAME} ${IMAGE_NAME}=gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT
