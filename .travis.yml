@@ -30,6 +30,7 @@ before_install:
 - gcloud container clusters get-credentials $CLUSTER_NAME
 script:
 - mvn clean install -B -Ddocker.image.tag=$TRAVIS_COMMIT
+- docker tag $IMAGE_NAME:$TRAVIS_COMMIT gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT
 - gcloud docker -- push gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT
 - gcloud --quiet container images add-tag gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT gcr.io/$PROJECT_NAME/$IMAGE_NAME:latest
 - kubectl set image statefulset/${IMAGE_NAME} ${IMAGE_NAME}=gcr.io/$PROJECT_NAME/$IMAGE_NAME:$TRAVIS_COMMIT
