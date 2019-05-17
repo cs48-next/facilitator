@@ -34,8 +34,6 @@ public class Venue {
 
 	private String currentTrackId;
 
-	private long currentTime;
-	
 	private long totalTime;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
