@@ -78,7 +78,26 @@ public class VenueService {
 			} else {
 				venue.setCurrentTrackId(null);
 			}
+			venue.setTimeProgress(0);
+			venue.setTotalTime(0);
 			venue.getVoteSkips().clear();
+			return venueRepo.save(venue);
+		});
+	}
+
+	/**
+	 * Updates the current time and total time of a {@link Venue}'s current {@link Track}
+	 *
+	 * @param venueId     venue ID to update for
+	 * @param timeProgress current time of track
+	 * @param totalTime   total time of song
+	 * @return Future representing action
+	 */
+	public CompletableFuture<Venue> venueUpdateTime(final String venueId, final double timeProgress, final double totalTime) {
+		return CompletableFuture.supplyAsync(() -> {
+			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
+			venue.setTimeProgress(timeProgress);
+			venue.setTotalTime(totalTime);
 			return venueRepo.save(venue);
 		});
 	}

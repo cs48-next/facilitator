@@ -3,8 +3,6 @@ package buzz.song.facilitator.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import org.apache.commons.lang3.Validate;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -13,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -29,12 +28,12 @@ public class Venue {
 	private String name;
 
 	private String hostName;
-
 	private String hostId;
 
 	private String currentTrackId;
 
-	private long totalTime;
+	private double timeProgress;
+	private double totalTime;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "venueId", referencedColumnName = "id", updatable = false)
@@ -46,7 +45,6 @@ public class Venue {
 	private SortedSet<Track> playlist;
 
 	private double latitude;
-
 	private double longitude;
 
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -135,6 +133,24 @@ public class Venue {
 		return longitude;
 	}
 
+	@JsonGetter("time_progress")
+	public double getTimeProgress() {
+		return timeProgress;
+	}
+
+	public void setTimeProgress(double timeProgress) {
+		this.timeProgress = timeProgress;
+	}
+
+	@JsonGetter("total_time")
+	public double getTotalTime() {
+		return totalTime;
+	}
+
+	public void setTotalTime(double totalTime) {
+		this.totalTime = totalTime;
+	}
+
 	@JsonGetter("created_on")
 	public Timestamp getCreatedOn() {
 		return createdOn;
@@ -157,5 +173,18 @@ public class Venue {
 				", latitude=" + latitude +
 				", longitude=" + longitude +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Venue venue = (Venue) o;
+		return Objects.equals(id, venue.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

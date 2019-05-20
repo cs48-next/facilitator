@@ -91,6 +91,7 @@ public class VenueController {
 										entry.getKey().getId(),
 										entry.getKey().getName(),
 										entry.getKey().getHostName(),
+										entry.getKey().getCurrentTrackId(),
 										entry.getValue(),
 										now - Optional.ofNullable(entry.getKey().getCreatedOn()).map(Timestamp::getTime).orElse(now + 1)
 								)).collect(Collectors.toCollection(TreeSet::new))
@@ -141,6 +142,30 @@ public class VenueController {
 				responseDeferred.setErrorResult(ex);
 			} else {
 				logger.info("Successfully updated venue track {}", venue);
+				responseDeferred.setResult(venue);
+			}
+		});
+		return responseDeferred;
+	}
+
+	@PutMapping("/venue/{venue_id}")
+	public DeferredResult<Venue> updateTime(
+			@PathVariable("venue_id") final String venueId,
+			@RequestParam("time_progress") final double timeProgress,
+			@RequestParam("total_time") final double totalTime
+	) {
+		Validate.notBlank(venueId);
+		logger.info("Received request to update current time for venue {}", venueId);
+
+		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
+		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+		venueService.venueUpdateTime(venueId, timeProgress, totalTime).whenCompleteAsync((venue, ex) -> {
+			if (ex != null) {
+				logger.error("Received error when updating venue current time", ex);
+				responseDeferred.setErrorResult(ex);
+			} else {
+				logger.info("Successfully updated venue current time {}", venue);
 				responseDeferred.setResult(venue);
 			}
 		});
