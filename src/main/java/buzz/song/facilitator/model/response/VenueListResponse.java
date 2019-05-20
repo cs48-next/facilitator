@@ -60,7 +60,7 @@ public class VenueListResponse {
 			return hostName;
 		}
 
-		@JsonGetter("currentTrackId")
+		@JsonGetter("current_track_id")
 		public String getCurrentTrackId() {
 			return currentTrackId;
 		}
