@@ -27,6 +27,7 @@ public class VenueListResponse {
 		private final String venueName;
 		private final String hostName;
 		private final String currentTrackId;
+		private final boolean closed;
 		private final double distance;
 		private final long ageMs;
 
@@ -34,6 +35,7 @@ public class VenueListResponse {
 							@JsonProperty("venue_name") final String venueName,
 							@JsonProperty("host_name") final String hostName,
 							@JsonProperty("current_track_id") final String currentTrackId,
+							@JsonProperty("closed") final boolean closed,
 							@JsonProperty("distance") final double distance,
 							@JsonProperty("age_ms") final long ageMs
 		) {
@@ -41,6 +43,7 @@ public class VenueListResponse {
 			this.venueName = venueName;
 			this.hostName = hostName;
 			this.currentTrackId = currentTrackId;
+			this.closed = closed;
 			this.distance = distance;
 			this.ageMs = ageMs;
 		}
@@ -63,6 +66,11 @@ public class VenueListResponse {
 		@JsonGetter("current_track_id")
 		public String getCurrentTrackId() {
 			return currentTrackId;
+		}
+
+		@JsonGetter("closed")
+		public boolean isClosed() {
+			return closed;
 		}
 
 		@JsonGetter("distance")

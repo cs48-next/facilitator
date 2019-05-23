@@ -92,6 +92,7 @@ public class VenueController {
 										entry.getKey().getName(),
 										entry.getKey().getHostName(),
 										entry.getKey().getCurrentTrackId(),
+										entry.getKey().getClosedOn() != null,
 										entry.getValue(),
 										now - Optional.ofNullable(entry.getKey().getCreatedOn()).map(Timestamp::getTime).orElse(now + 1)
 								)).collect(Collectors.toCollection(TreeSet::new))
