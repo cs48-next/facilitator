@@ -126,6 +126,29 @@ public class VenueController {
 		return responseDeferred;
 	}
 
+	@DeleteMapping("/venue/{venue_id}")
+	public DeferredResult<Venue> closeVenue(
+			@PathVariable("venue_id") final String venueId
+	) {
+		Validate.notBlank(venueId);
+		logger.info("Received request to close venue {}", venueId);
+
+		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
+		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+		venueService.closeVenue(venueId).whenCompleteAsync((venue, ex) -> {
+			if (ex != null) {
+				logger.error("Received error when closing venue", ex);
+				responseDeferred.setErrorResult(ex);
+			} else {
+				logger.info("Successfully closed venue {}", venue.getId());
+				responseDeferred.setResult(venue);
+			}
+		});
+		return responseDeferred;
+	}
+
+
 	@PostMapping("/venue/{venue_id}/next")
 	public DeferredResult<Venue> nextTrack(
 			@PathVariable("venue_id") final String venueId

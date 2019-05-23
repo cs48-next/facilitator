@@ -137,7 +137,14 @@ public class WebIT {
 		final ResultActions fetchActions2 = mockMvc.perform(asyncDispatch(fetchVenue2)).andExpect(status().isOk());
 		final Venue fetchedVenue2 = objectMapper.readValue(fetchActions2.andReturn().getResponse().getContentAsString(), Venue.class);
 
+		Assert.assertNull(fetchedVenue2.getClosedOn());
 		Assert.assertEquals(1, fetchedVenue2.getVoteSkips().size());
 		Assert.assertEquals(skip, fetchedVenue2.getVoteSkips().iterator().next());
+
+		final MvcResult closeVenue = mockMvc.perform(delete("/venue/" + venue.getId())).andReturn();
+		final ResultActions closeActions = mockMvc.perform(asyncDispatch(closeVenue)).andExpect(status().isOk());
+		final Venue closedVenue = objectMapper.readValue(closeActions.andReturn().getResponse().getContentAsString(), Venue.class);
+
+		Assert.assertNotNull(closedVenue.getClosedOn());
 	}
 }

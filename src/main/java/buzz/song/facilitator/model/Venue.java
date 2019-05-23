@@ -59,6 +59,8 @@ public class Venue {
 	@Column(name = "modified_on", updatable = false)
 	private Timestamp modifiedOn;
 
+	private Timestamp closedOn;
+
 	@JsonCreator
 	public Venue(
 			@NotNull @JsonProperty("id") final String id,
@@ -69,7 +71,8 @@ public class Venue {
 			@NotNull @JsonProperty("current_track_id") final String currentTrackId,
 			@NotNull @JsonProperty("playlist") final SortedSet<Track> playlist,
 			@JsonProperty("latitude") final double latitude,
-			@JsonProperty("longitude") final double longitude
+			@JsonProperty("longitude") final double longitude,
+			@JsonProperty("stats") final VenueStats venueStats
 	) {
 		this.id = id;
 		this.name = name;
@@ -80,6 +83,7 @@ public class Venue {
 		this.playlist = playlist;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.venueStats = venueStats;
 	}
 
 	private Venue() {}
@@ -102,6 +106,11 @@ public class Venue {
 	@JsonGetter("host_id")
 	public String getHostId() {
 		return hostId;
+	}
+
+	@JsonGetter("stats")
+	public VenueStats getVenueStats() {
+		return venueStats;
 	}
 
 	@JsonGetter("current_track_id")
@@ -159,6 +168,15 @@ public class Venue {
 	@JsonGetter("modified_on")
 	public Timestamp getModifiedOn() {
 		return modifiedOn;
+	}
+
+	@JsonGetter("closed_on")
+	public Timestamp getClosedOn() {
+		return closedOn;
+	}
+
+	public void setClosedOn(final Timestamp closedOn) {
+		this.closedOn = closedOn;
 	}
 
 	@Override

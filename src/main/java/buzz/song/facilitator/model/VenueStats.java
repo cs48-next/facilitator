@@ -17,116 +17,131 @@ import java.util.Objects;
 @Entity
 @Table(name = "venue_stats")
 public class VenueStats {
-    @Id
-    private String venueId;
+	@Id
+	private String venueId;
 
-    private int totalTracksPlayed;
-    private int totalTracksSkipped;
-    private int totalTracksProposed;
-    private int totalTrackUpvotes;
-    private int totalTrackDownvotes;
+	private int totalTracksPlayed;
+	private int totalTracksSkipped;
+	private int totalTracksProposed;
+	private int totalTrackUpvotes;
+	private int totalTrackDownvotes;
 
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Timestamp createdOn;
+	@CreationTimestamp
+	@Column(name = "created_on", updatable = false)
+	private Timestamp createdOn;
 
-    @UpdateTimestamp
-    @Column(name = "modified_on", updatable = false)
-    private Timestamp modifiedOn;
+	@UpdateTimestamp
+	@Column(name = "modified_on", updatable = false)
+	private Timestamp modifiedOn;
 
-    @JsonCreator
-    public VenueStats(
-            @NonNull @JsonProperty("venue_id") final String venueId,
-            @JsonProperty("total_tracks_played") final int totalTracksPlayed,
-            @JsonProperty("total_tracks_skipped") final int totalTracksSkipped,
-            @JsonProperty("total_tracks_proposed") final int totalTracksProposed,
-            @JsonProperty("total_track_upvotes") final int totalTrackUpvotes,
-            @JsonProperty("total_track_downvotes") final int totalTrackDownvotes
-    ) {
-        this.venueId = venueId;
-        this.totalTracksPlayed = totalTracksPlayed;
-        this.totalTracksSkipped = totalTracksSkipped;
-        this.totalTracksProposed = totalTracksProposed;
-        this.totalTrackUpvotes = totalTrackUpvotes;
-        this.totalTrackDownvotes = totalTrackDownvotes;
-    }
+	@JsonCreator
+	public VenueStats(
+			@NonNull @JsonProperty("venue_id") final String venueId,
+			@JsonProperty("total_tracks_played") final int totalTracksPlayed,
+			@JsonProperty("total_tracks_skipped") final int totalTracksSkipped,
+			@JsonProperty("total_tracks_proposed") final int totalTracksProposed,
+			@JsonProperty("total_track_upvotes") final int totalTrackUpvotes,
+			@JsonProperty("total_track_downvotes") final int totalTrackDownvotes
+	) {
+		this.venueId = venueId;
+		this.totalTracksPlayed = totalTracksPlayed;
+		this.totalTracksSkipped = totalTracksSkipped;
+		this.totalTracksProposed = totalTracksProposed;
+		this.totalTrackUpvotes = totalTrackUpvotes;
+		this.totalTrackDownvotes = totalTrackDownvotes;
+	}
 
-    private VenueStats() {}
+	private VenueStats() {
+	}
 
-    @JsonGetter("venue_id")
-    public String getVenueId() {
-        return venueId;
-    }
+	@JsonGetter("venue_id")
+	public String getVenueId() {
+		return venueId;
+	}
 
-    public void setVenueId(String venueId) {
-        this.venueId = venueId;
-    }
+	public void setVenueId(String venueId) {
+		this.venueId = venueId;
+	}
 
-    @JsonGetter("total_tracks_played")
-    public int getTotalTracksPlayed() {
-        return totalTracksPlayed;
-    }
+	@JsonGetter("total_tracks_played")
+	public int getTotalTracksPlayed() {
+		return totalTracksPlayed;
+	}
 
-    public void setTotalTracksPlayed(int totalTracksPlayed) {
-        this.totalTracksPlayed = totalTracksPlayed;
-    }
+	public void setTotalTracksPlayed(int totalTracksPlayed) {
+		this.totalTracksPlayed = totalTracksPlayed;
+	}
 
-    @JsonGetter("total_tracks_skipped")
-    public int getTotalTracksSkipped() {
-        return totalTracksSkipped;
-    }
+	@JsonGetter("total_tracks_skipped")
+	public int getTotalTracksSkipped() {
+		return totalTracksSkipped;
+	}
 
-    public void setTotalTracksSkipped(int totalTracksSkipped) {
-        this.totalTracksSkipped = totalTracksSkipped;
-    }
+	public void setTotalTracksSkipped(int totalTracksSkipped) {
+		this.totalTracksSkipped = totalTracksSkipped;
+	}
 
-    @JsonGetter("total_tracks_proposed")
-    public int getTotalTracksProposed() {
-        return totalTracksProposed;
-    }
+	@JsonGetter("total_tracks_proposed")
+	public int getTotalTracksProposed() {
+		return totalTracksProposed;
+	}
 
-    public void setTotalTracksProposed(int totalTracksProposed) {
-        this.totalTracksProposed = totalTracksProposed;
-    }
+	public void setTotalTracksProposed(int totalTracksProposed) {
+		this.totalTracksProposed = totalTracksProposed;
+	}
 
-    @JsonGetter("total_track_upvotes")
-    public int getTotalTrackUpvotes() {
-        return totalTrackUpvotes;
-    }
+	@JsonGetter("total_track_upvotes")
+	public int getTotalTrackUpvotes() {
+		return totalTrackUpvotes;
+	}
 
-    public void setTotalTrackUpvotes(int totalTrackUpvotes) {
-        this.totalTrackUpvotes = totalTrackUpvotes;
-    }
+	public void setTotalTrackUpvotes(int totalTrackUpvotes) {
+		this.totalTrackUpvotes = totalTrackUpvotes;
+	}
 
-    @JsonGetter("total_track_downvotes")
-    public int getTotalTrackDownvotes() {
-        return totalTrackDownvotes;
-    }
+	@JsonGetter("total_track_downvotes")
+	public int getTotalTrackDownvotes() {
+		return totalTrackDownvotes;
+	}
 
-    public void setTotalTrackDownvotes(int totalTrackDownvotes) {
-        this.totalTrackDownvotes = totalTrackDownvotes;
-    }
+	public void setTotalTrackDownvotes(int totalTrackDownvotes) {
+		this.totalTrackDownvotes = totalTrackDownvotes;
+	}
 
-    @JsonGetter("created_on")
-    public Timestamp getCreatedOn() {
-        return createdOn;
-    }
+	@JsonGetter("created_on")
+	public Timestamp getCreatedOn() {
+		return createdOn;
+	}
 
-    @JsonGetter("modified_on")
-    public Timestamp getModifiedOn() {
-        return modifiedOn;
-    }
+	@JsonGetter("modified_on")
+	public Timestamp getModifiedOn() {
+		return modifiedOn;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        VenueStats that = (VenueStats) o;
-        return venueId.equals(that.venueId);
-    }
+	@Override
+	public String toString() {
+		return "VenueStats{" +
+				"venueId='" + venueId + '\'' +
+				", totalTracksPlayed=" + totalTracksPlayed +
+				", totalTracksSkipped=" + totalTracksSkipped +
+				", totalTracksProposed=" + totalTracksProposed +
+				", totalTrackUpvotes=" + totalTrackUpvotes +
+				", totalTrackDownvotes=" + totalTrackDownvotes +
+				", createdOn=" + createdOn +
+				", modifiedOn=" + modifiedOn +
+				'}';
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(venueId);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		VenueStats that = (VenueStats) o;
+		return venueId.equals(that.venueId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(venueId);
+	}
 }

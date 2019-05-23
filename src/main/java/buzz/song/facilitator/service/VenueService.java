@@ -1,17 +1,12 @@
 package buzz.song.facilitator.service;
 
-import buzz.song.facilitator.model.Track;
-import buzz.song.facilitator.model.Venue;
-import buzz.song.facilitator.model.Vote;
-import buzz.song.facilitator.model.VoteSkip;
-import buzz.song.facilitator.repository.TrackRepository;
-import buzz.song.facilitator.repository.VenueRepository;
-import buzz.song.facilitator.repository.VoteRepository;
-import buzz.song.facilitator.repository.VoteSkipRepo;
+import buzz.song.facilitator.model.*;
+import buzz.song.facilitator.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -20,9 +15,10 @@ import java.util.stream.Collectors;
 public class VenueService {
 
 	private final VenueRepository venueRepo;
+	private final VenueStatsRepository statRepo;
 	private final TrackRepository trackRepo;
 	private final VoteRepository voteRepo;
-	private final VoteSkipRepo voteSkipRepo;
+	private final VoteSkipRepository voteSkipRepository;
 
 	@Value("${venue.voteskip_threshold}")
 	private int voteskipThreshold;
@@ -30,14 +26,16 @@ public class VenueService {
 	@Autowired
 	public VenueService(
 			final VenueRepository venueRepo,
+			final VenueStatsRepository statRepo,
 			final TrackRepository trackRepo,
 			final VoteRepository voteRepo,
-			final VoteSkipRepo voteSkipRepo
+			final VoteSkipRepository voteSkipRepository
 	) {
 		this.venueRepo = venueRepo;
+		this.statRepo = statRepo;
 		this.trackRepo = trackRepo;
 		this.voteRepo = voteRepo;
-		this.voteSkipRepo = voteSkipRepo;
+		this.voteSkipRepository = voteSkipRepository;
 	}
 
 	/**
@@ -48,8 +46,9 @@ public class VenueService {
 	 * @return Future for created {@link Venue}
 	 */
 	public CompletableFuture<Venue> createVenue(final String name, final String hostName, final String hostId, final double latitude, final double longitude) {
+		final String venueId = UUID.randomUUID().toString();
 		final Venue venue = new Venue(
-				UUID.randomUUID().toString(),
+				venueId,
 				name,
 				hostName,
 				hostId,
@@ -57,7 +56,8 @@ public class VenueService {
 				null,
 				new TreeSet<>(),
 				latitude,
-				longitude
+				longitude,
+				new VenueStats(venueId, 0, 0, 0, 0, 0)
 		);
 		return CompletableFuture.supplyAsync(() -> venueRepo.save(venue));
 	}
@@ -75,6 +75,10 @@ public class VenueService {
 				final Track first = venue.getPlaylist().first();
 				venue.getPlaylist().remove(first);
 				venue.setCurrentTrackId(first.getTrackId());
+
+				final VenueStats stats = statRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find stats for venue '" + venueId + "'"));
+				stats.setTotalTracksPlayed(stats.getTotalTracksPlayed() + 1);
+				statRepo.save(stats);
 			} else {
 				venue.setCurrentTrackId(null);
 			}
@@ -141,7 +145,16 @@ public class VenueService {
 				userId,
 				upvote
 		);
-		return CompletableFuture.supplyAsync(() -> voteRepo.save(vote));
+		return CompletableFuture.supplyAsync(() -> {
+			final VenueStats stats = statRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find stats for venue '" + venueId + "'"));
+			if (upvote) {
+				stats.setTotalTrackUpvotes(stats.getTotalTrackUpvotes() + 1);
+			} else {
+				stats.setTotalTrackDownvotes(stats.getTotalTrackDownvotes() + 1);
+			}
+			statRepo.save(stats);
+			return voteRepo.save(vote);
+		});
 	}
 
 	/**
@@ -154,10 +167,14 @@ public class VenueService {
 	public CompletableFuture<VoteSkip> voteskipTrack(final String venueId, final String userId) {
 		final VoteSkip voteSkip = new VoteSkip(venueId, userId);
 		return CompletableFuture.supplyAsync(() -> {
-			final VoteSkip created = voteSkipRepo.save(voteSkip);
+			final VoteSkip created = voteSkipRepository.save(voteSkip);
 			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
 			if (venue.getVoteSkips().size() >= voteskipThreshold) {
 				venueNextTrack(venueId).join();
+
+				final VenueStats stats = statRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find stats for venue '" + venueId + "'"));
+				stats.setTotalTracksSkipped(stats.getTotalTracksSkipped() + 1);
+				statRepo.save(stats);
 			}
 			return created;
 		});
@@ -173,7 +190,7 @@ public class VenueService {
 	 */
 	public CompletableFuture<Void> unvoteskipTrack(final String venueId, final String userId) {
 		final VoteSkip.VoteSkipID id = new VoteSkip.VoteSkipID(venueId, userId);
-		return CompletableFuture.runAsync(() -> voteSkipRepo.deleteById(id));
+		return CompletableFuture.runAsync(() -> voteSkipRepository.deleteById(id));
 	}
 
 	/**
@@ -200,6 +217,19 @@ public class VenueService {
 	}
 
 	/**
+	 * Marks a venue as closed
+	 * @param venueId ID of {@link Venue} to close
+	 * @return Future for closed {@link Venue}
+	 */
+	public CompletableFuture<Venue> closeVenue(final String venueId) {
+		return CompletableFuture.supplyAsync(() -> {
+			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
+			venue.setClosedOn(new Timestamp(System.currentTimeMillis()));
+			return venueRepo.save(venue);
+		});
+	}
+
+	/**
 	 * Adds a song to the {@link Venue} identified by the given venue ID.
 	 *
 	 * @param venueId the {@link Venue} ID to add a track to
@@ -212,6 +242,11 @@ public class VenueService {
 				trackId,
 				new HashSet<>()
 		);
-		return CompletableFuture.supplyAsync(() -> trackRepo.save(track));
+		return CompletableFuture.supplyAsync(() -> {
+			final VenueStats stats = statRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find stats for venue '" + venueId + "'"));
+			stats.setTotalTracksProposed(stats.getTotalTracksProposed() + 1);
+			statRepo.save(stats);
+			return trackRepo.save(track);
+		});
 	}
 }
