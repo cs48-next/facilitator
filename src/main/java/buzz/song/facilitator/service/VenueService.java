@@ -76,9 +76,9 @@ public class VenueService {
 				venue.getPlaylist().remove(first);
 				venue.setCurrentTrackId(first.getTrackId());
 
-				final VenueStats stats = statRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find stats for venue '" + venueId + "'"));
+				final VenueStats stats = venue.getVenueStats();
 				stats.setTotalTracksPlayed(stats.getTotalTracksPlayed() + 1);
-				statRepo.save(stats);
+				venue.setVenueStats(stats);
 			} else {
 				venue.setCurrentTrackId(null);
 			}

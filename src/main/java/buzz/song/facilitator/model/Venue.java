@@ -113,6 +113,10 @@ public class Venue {
 		return venueStats;
 	}
 
+	public void setVenueStats(VenueStats venueStats) {
+		this.venueStats = venueStats;
+	}
+
 	@JsonGetter("current_track_id")
 	public String getCurrentTrackId() {
 		return currentTrackId;
