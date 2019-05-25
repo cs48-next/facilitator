@@ -20,6 +20,7 @@ import java.util.SortedSet;
  */
 @Entity
 @Table(name = "venue")
+@DynamicUpdate
 public class Venue {
 
 	@Id

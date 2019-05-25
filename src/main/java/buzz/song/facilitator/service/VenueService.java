@@ -97,13 +97,8 @@ public class VenueService {
 	 * @param totalTime   total time of song
 	 * @return Future representing action
 	 */
-	public CompletableFuture<Venue> venueUpdateTime(final String venueId, final double timeProgress, final double totalTime) {
-		return CompletableFuture.supplyAsync(() -> {
-			final Venue venue = venueRepo.findById(venueId).orElseThrow(() -> new RuntimeException("Unable to find venue '" + venueId + "'"));
-			venue.setTimeProgress(timeProgress);
-			venue.setTotalTime(totalTime);
-			return venueRepo.save(venue);
-		});
+	public CompletableFuture<Void> venueUpdateTime(final String venueId, final double timeProgress, final double totalTime) {
+		return CompletableFuture.runAsync(() -> venueRepo.updateTimeProgress(venueId, timeProgress, totalTime));
 	}
 
 	/**

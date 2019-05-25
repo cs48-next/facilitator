@@ -173,7 +173,7 @@ public class VenueController {
 	}
 
 	@PutMapping("/venue/{venue_id}")
-	public DeferredResult<Venue> updateTime(
+	public DeferredResult<Void> updateTime(
 			@PathVariable("venue_id") final String venueId,
 			@RequestParam("time_progress") final double timeProgress,
 			@RequestParam("total_time") final double totalTime
@@ -181,16 +181,16 @@ public class VenueController {
 		Validate.notBlank(venueId);
 		logger.info("Received request to update current time for venue {}", venueId);
 
-		final DeferredResult<Venue> responseDeferred = new DeferredResult<>(controllerTimeout);
+		final DeferredResult<Void> responseDeferred = new DeferredResult<>(controllerTimeout);
 		responseDeferred.onTimeout(() -> responseDeferred.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
 
-		venueService.venueUpdateTime(venueId, timeProgress, totalTime).whenCompleteAsync((venue, ex) -> {
+		venueService.venueUpdateTime(venueId, timeProgress, totalTime).whenCompleteAsync((_ignore, ex) -> {
 			if (ex != null) {
 				logger.error("Received error when updating venue current time", ex);
 				responseDeferred.setErrorResult(ex);
 			} else {
-				logger.info("Successfully updated venue current time {}", venue);
-				responseDeferred.setResult(venue);
+				logger.info("Successfully updated venue current time for venue {}", venueId);
+				responseDeferred.setResult(null);
 			}
 		});
 		return responseDeferred;
