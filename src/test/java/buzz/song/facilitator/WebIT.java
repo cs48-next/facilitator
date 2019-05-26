@@ -81,6 +81,12 @@ public class WebIT {
 		Assert.assertEquals(venue.getId(), vote.getVenueId());
 		Assert.assertTrue(vote.isUpvote());
 
+		final MvcResult downvoteResult = mockMvc.perform(put("/vote/" + venue.getId() + "/Tra.1/user_2/downvote")).andReturn();
+		final ResultActions downvoteActions = mockMvc.perform(asyncDispatch(downvoteResult)).andExpect(status().isOk());
+
+		final MvcResult deleteVoteResult = mockMvc.perform(delete("/vote/" + venue.getId() + "/Tra.1/user_2")).andReturn();
+		final ResultActions deleteVoteActions = mockMvc.perform(asyncDispatch(deleteVoteResult)).andExpect(status().isOk());
+
 		final MvcResult listVenues = mockMvc.perform(get("/venue?latitude=200&longitude=300")).andReturn();
 		final ResultActions listActions = mockMvc.perform(asyncDispatch(listVenues)).andExpect(status().isOk());
 
@@ -133,6 +139,9 @@ public class WebIT {
 		Assert.assertEquals(venue.getId(), skip.getVenueId());
 		Assert.assertEquals("user_1", skip.getUserId());
 
+		final MvcResult updateVenueTime = mockMvc.perform(put("/venue/" + venue.getId() + "?time_progress=0&total_time=0")).andReturn();
+		final ResultActions updateVenueTimeActions = mockMvc.perform(asyncDispatch(updateVenueTime)).andExpect(status().isOk());
+
 		final MvcResult fetchVenue2 = mockMvc.perform(get("/venue/" + venue.getId())).andReturn();
 		final ResultActions fetchActions2 = mockMvc.perform(asyncDispatch(fetchVenue2)).andExpect(status().isOk());
 		final Venue fetchedVenue2 = objectMapper.readValue(fetchActions2.andReturn().getResponse().getContentAsString(), Venue.class);
@@ -140,6 +149,9 @@ public class WebIT {
 		Assert.assertNull(fetchedVenue2.getClosedOn());
 		Assert.assertEquals(1, fetchedVenue2.getVoteSkips().size());
 		Assert.assertEquals(skip, fetchedVenue2.getVoteSkips().iterator().next());
+
+		final MvcResult deleteVoteSkip = mockMvc.perform(delete("/voteskip/" + venue.getId() + "/user_1")).andReturn();
+		final ResultActions deleteVoteSkipActions = mockMvc.perform(asyncDispatch(deleteVoteSkip)).andExpect(status().isOk());
 
 		final MvcResult closeVenue = mockMvc.perform(delete("/venue/" + venue.getId())).andReturn();
 		final ResultActions closeActions = mockMvc.perform(asyncDispatch(closeVenue)).andExpect(status().isOk());
