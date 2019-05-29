@@ -91,6 +91,7 @@ public class VenueController {
 										entry.getKey().getId(),
 										entry.getKey().getName(),
 										entry.getKey().getHostName(),
+										entry.getKey().getHostId(),
 										entry.getKey().getCurrentTrackId(),
 										entry.getKey().getClosedOn() != null,
 										entry.getValue(),
