@@ -32,7 +32,7 @@
 		<docker.image.name>facilitator</docker.image.name>
 		<docker.image.tag>latest</docker.image.tag>
 
-		<commons.lang3.version>3.9</commons.lang3.version>
+		<commons.lang3.version>3.18.0</commons.lang3.version>
 
 	</properties>
 
